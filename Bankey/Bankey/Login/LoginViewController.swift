@@ -12,6 +12,7 @@ class LoginViewController: UIViewController {
     let loginView = LoginView()
     let signinButton = UIButton(type: .system)
     let errorMessageLabel = UILabel()
+    let titleLabel = UILabel()
     
     var userName: String? {
         return loginView.userNameTextField.text
@@ -45,12 +46,27 @@ extension LoginViewController {
         errorMessageLabel.textColor = .systemRed
         errorMessageLabel.numberOfLines = 1
         errorMessageLabel.isHidden = true
+        
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.textAlignment = .center
+        titleLabel.numberOfLines = 1
+        titleLabel.font = UIFont.systemFont(ofSize: 36)
+        titleLabel.text = "Bankey"
     }
     
     func layout() {
+        view.addSubview(titleLabel)
         view.addSubview(loginView)
         view.addSubview(signinButton)
         view.addSubview(errorMessageLabel)
+        
+        //titlelabel
+        
+        NSLayoutConstraint.activate([
+            loginView.topAnchor.constraint(equalToSystemSpacingBelow: titleLabel.bottomAnchor, multiplier: 2),
+            titleLabel.leadingAnchor.constraint(equalTo: loginView.leadingAnchor),
+            titleLabel.trailingAnchor.constraint(equalTo: loginView.trailingAnchor)
+        ])
         
         // Login View
         NSLayoutConstraint.activate([
