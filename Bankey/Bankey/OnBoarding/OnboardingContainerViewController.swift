@@ -7,25 +7,30 @@
 
 import UIKit
 
+protocol OnboardingContainerViewControllerDelegate: AnyObject {
+    func didFinishOnBoarding()
+}
+
 class OnboardingContainerViewController: UIViewController {
     
     
     
     let pageViewController: UIPageViewController
     var pages = [UIViewController]()
-    var currentVC: UIViewController {
-        didSet {
-            
-        }
-    }
+    var currentVC: UIViewController
+    var closeButton = UIButton(type: .system)
+    var nextButton = UIButton(type: .system)
+    var prevButton = UIButton(type: .system)
+    var doneButton = UIButton(type: .system)
     
+    weak var delegate: OnboardingContainerViewControllerDelegate?
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         
         self.pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
         
-        let page1 = ViewController1()
-        let page2 = ViewController2()
-        let page3 = ViewController3()
+        let page1 = OnBoardingViewController(heroImageName: "delorean", title: "This is Delorean")
+        let page2 = OnBoardingViewController(heroImageName: "thumbs", title: "This is Thumbs")
+        let page3 = OnBoardingViewController(heroImageName: "world", title: "This is World")
         
         pages.append(page1)
         pages.append(page2)
@@ -44,7 +49,15 @@ class OnboardingContainerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemPurple
+        setup()
+        style()
+        layout()
+  
+    }
+    
+    func setup() {
+        
+        view.backgroundColor = .secondarySystemBackground
         
         addChild(pageViewController)
         view.addSubview(pageViewController.view)
@@ -64,6 +77,45 @@ class OnboardingContainerViewController: UIViewController {
         pageViewController.setViewControllers([pages.first!], direction: .forward, animated: false)
         currentVC = pages.first!
     }
+    
+    
+    func style() {
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.setTitle("Close", for: [])
+        closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .primaryActionTriggered)
+        
+        doneButton.translatesAutoresizingMaskIntoConstraints = false
+        doneButton.setTitle("Close", for: [])
+        doneButton.addTarget(self, action: #selector(doneButtonTapped), for: .primaryActionTriggered)
+        
+        prevButton.translatesAutoresizingMaskIntoConstraints = false
+        prevButton.setTitle("Close", for: [])
+        prevButton.addTarget(self, action: #selector(prevButtonTapped), for: .primaryActionTriggered)
+        
+        nextButton.translatesAutoresizingMaskIntoConstraints = false
+        nextButton.setTitle("Next", for: [])
+        nextButton.addTarget(self, action: #selector(nextButtonTapped), for: .primaryActionTriggered)
+        
+    }
+    
+    
+    func layout() {
+        
+        view.addSubview(closeButton)
+        view.addSubview(nextButton)
+        
+        NSLayoutConstraint.activate([
+            closeButton.leadingAnchor.constraint(equalToSystemSpacingAfter: view.leadingAnchor, multiplier: 2),
+            closeButton.topAnchor.constraint(equalToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 2)
+        ])
+        
+        NSLayoutConstraint.activate([
+            view.trailingAnchor.constraint(equalToSystemSpacingAfter: nextButton.trailingAnchor, multiplier: 2),
+            view.safeAreaLayoutGuide.bottomAnchor.constraint(equalToSystemSpacingBelow: nextButton.bottomAnchor, multiplier: 2)
+        ])
+        
+    }
+    
     
 
     /*
@@ -117,26 +169,29 @@ extension OnboardingContainerViewController: UIPageViewControllerDataSource {
     
 }
 
-class ViewController1: UIViewController {
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemRed
-    }
-}
 
-class ViewController2: UIViewController {
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemMint
-    }
-}
 
-class ViewController3: UIViewController {
+
+// MARK: - Actions
+
+extension OnboardingContainerViewController {
+    @objc
+    func closeButtonTapped() {
+        delegate?.didFinishOnBoarding()
+    }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemBlue
+    @objc
+    func nextButtonTapped() {
+        
+    }
+    
+    @objc
+    func doneButtonTapped() {
+        delegate?.didFinishOnBoarding()
+    }
+    
+    @objc
+    func prevButtonTapped() {
+        
     }
 }

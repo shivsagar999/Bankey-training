@@ -14,6 +14,18 @@ class OnBoardingViewController: UIViewController {
     let imageView = UIImageView()
     let label = UILabel()
     
+    
+    
+    init(heroImageName: String, title: String) {
+        self.imageView.image = UIImage(named: heroImageName)
+        self.label.text = title
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         style()
@@ -25,17 +37,19 @@ class OnBoardingViewController: UIViewController {
 extension OnBoardingViewController {
     
     func style() {
+        
+        view.backgroundColor = .systemBackground
         stackView.translatesAutoresizingMaskIntoConstraints = false;
         stackView.axis = .vertical;
         stackView.spacing = 20;
         
         
         imageView.translatesAutoresizingMaskIntoConstraints = false;
-        imageView.contentMode = .scaleAspectFill
-        imageView.image = UIImage(named: "delorean")
+        imageView.contentMode = .scaleAspectFit
+        
         
         label.translatesAutoresizingMaskIntoConstraints = false;
-        label.text = "Welcome"
+        
         label.textAlignment = .center
         label.font = UIFont.preferredFont(forTextStyle: .title1)
     }
