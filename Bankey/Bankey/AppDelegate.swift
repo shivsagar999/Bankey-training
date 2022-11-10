@@ -26,12 +26,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         onboadindContainerViewController.delegate = self
         loginViewController.delegate = self
-        
-        window?.rootViewController = mainViewController
+        var vc = MainViewController()
+        vc.setStatusBar()
+        registerForNotification()
+        UINavigationBar.appearance().isTranslucent = false
+        UINavigationBar.appearance().backgroundColor = appColor
+        window?.rootViewController = vc
         return true
     }
 
-   
+    func registerForNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(didLogout), name: .Logout, object: nil)
+    }
 
 }
 
@@ -62,6 +68,9 @@ extension AppDelegate: OnboardingContainerViewControllerDelegate {
         print("foo did finish onboarding")
     }
     
-    
+    @objc
+    func didLogout() {
+        setRootViewController(loginViewController, animated: true)
+    }
  
 }

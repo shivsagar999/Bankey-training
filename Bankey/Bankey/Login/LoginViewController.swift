@@ -29,6 +29,10 @@ class LoginViewController: UIViewController {
         return loginView.userNameTextField.text
     }
 
+    var leadingEdgeOffScreen: CGFloat = -100
+    var leadingEdgeOnScreen: CGFloat = 16
+    
+    var titleLeadingAnchor: NSLayoutConstraint?
     override func viewDidLoad() {
         super.viewDidLoad()
         style()
@@ -37,6 +41,10 @@ class LoginViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         signinButton.configuration?.showsActivityIndicator = false
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        animate()
     }
 
 
@@ -63,6 +71,7 @@ extension LoginViewController {
         titleLabel.numberOfLines = 1
         titleLabel.font = UIFont.systemFont(ofSize: 36)
         titleLabel.text = "Bankey"
+        titleLabel.alpha = 0
     }
     
     func layout() {
@@ -75,10 +84,12 @@ extension LoginViewController {
         
         NSLayoutConstraint.activate([
             loginView.topAnchor.constraint(equalToSystemSpacingBelow: titleLabel.bottomAnchor, multiplier: 2),
-            titleLabel.leadingAnchor.constraint(equalTo: loginView.leadingAnchor),
+            
             titleLabel.trailingAnchor.constraint(equalTo: loginView.trailingAnchor)
         ])
         
+        titleLeadingAnchor = titleLabel.leadingAnchor.constraint(equalTo: loginView.leadingAnchor, constant: leadingEdgeOffScreen)
+        titleLeadingAnchor?.isActive = true
         // Login View
         NSLayoutConstraint.activate([
             loginView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -116,11 +127,12 @@ extension LoginViewController {
             return
         }
             
-//        if userName.isEmpty || password.isEmpty {
-//            configureView(withMessage: "Username/ password cannot be empty")
-//        }
+        if userName.isEmpty || password.isEmpty {
+            shakeButton()
+            configureView(withMessage: "Username/ password cannot be empty")
+        }
         
-        if userName == "" || password == "" {
+        if userName == "q" || password == "q" {
             signinButton.configuration?.showsActivityIndicator = true
             delegate?.didLogin()
         } else {
@@ -131,6 +143,35 @@ extension LoginViewController {
     func configureView(withMessage message: String) {
         errorMessageLabel.text = message
         errorMessageLabel.isHidden = false
+    }
+}
+
+// MARK: - Animations
+
+extension LoginViewController {
+    func animate() {
+        let duration = 0.8
+        let animator1 = UIViewPropertyAnimator(duration: duration, curve: .easeInOut) {
+            self.titleLeadingAnchor?.constant = self.leadingEdgeOnScreen
+            self.view.layoutIfNeeded()
+        }
+        let animator2 = UIViewPropertyAnimator(duration: duration*2, curve: .easeInOut) {
+            self.titleLabel.alpha = 1
+            self.view.layoutIfNeeded()
+        }
+        animator1.startAnimation()
+        animator2.startAnimation(afterDelay: 0.2)
+    }
+    
+    private func shakeButton() {
+        let animation = CAKeyframeAnimation()
+        animation.keyPath = "position.x"
+        animation.values = [0, 10, -10, 10, 0]
+        animation.keyTimes = [0, 0.16, 0.5, 0.76, 1]
+        animation.duration = 0.4
+        
+        animation.isAdditive = true
+        signinButton.layer.add(animation, forKey: "shake")
     }
 }
 
